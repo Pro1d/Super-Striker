@@ -1,0 +1,94 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://entities/Ship.gd" type="Script" id=1]
+[ext_resource path="res://entities/MainCanonNode.gd" type="Script" id=2]
+[ext_resource path="res://entities/EnemySpawner.gd" type="Script" id=3]
+[ext_resource path="res://entities/Planet.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/fighter/fighter.tscn" type="PackedScene" id=5]
+[ext_resource path="res://particles/ReactorParticles.tscn" type="PackedScene" id=6]
+[ext_resource path="res://gui/HUD.tscn" type="PackedScene" id=7]
+[ext_resource path="res://gui/HUD.gd" type="Script" id=8]
+
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.38
+height = 0.44
+
+[sub_resource type="CylinderShape" id=2]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="CapsuleShape" id=3]
+radius = 0.4
+height = 0.44
+
+[node name="Space" type="Spatial"]
+
+[node name="Planet" parent="." instance=ExtResource( 4 )]
+
+[node name="Ship" type="KinematicBody" parent="Planet"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 52, 0 )
+collision_layer = 2
+collision_mask = 7
+script = ExtResource( 1 )
+
+[node name="ShipBodyCollision" type="CollisionShape" parent="Planet/Ship"]
+shape = SubResource( 1 )
+
+[node name="Visual" parent="Planet/Ship" instance=ExtResource( 5 )]
+
+[node name="CanonLeft" type="Spatial" parent="Planet/Ship/Visual"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28195, 0.0548172, -0.243481 )
+script = ExtResource( 2 )
+
+[node name="Timer" type="Timer" parent="Planet/Ship/Visual/CanonLeft"]
+wait_time = 0.332
+autostart = true
+
+[node name="CanonRight" type="Spatial" parent="Planet/Ship/Visual"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.282711, 0.0537949, -0.234939 )
+script = ExtResource( 2 )
+
+[node name="Timer" type="Timer" parent="Planet/Ship/Visual/CanonRight"]
+wait_time = 0.332
+autostart = true
+
+[node name="Particles" parent="Planet/Ship/Visual" instance=ExtResource( 6 )]
+
+[node name="Particles2" parent="Planet/Ship/Visual" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.279539, 0.0594444, 0.318059 )
+amount = 16
+lifetime = 0.08
+
+[node name="Particles3" parent="Planet/Ship/Visual" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.0589981, 0.318 )
+amount = 16
+lifetime = 0.08
+
+[node name="TriggerArea" type="Area" parent="Planet/Ship"]
+collision_layer = 2
+
+[node name="CollisionShape" type="CollisionShape" parent="Planet/Ship/TriggerArea"]
+shape = SubResource( 2 )
+
+[node name="ContactArea" type="Area" parent="Planet/Ship"]
+collision_layer = 2
+collision_mask = 20
+
+[node name="CollisionShape" type="CollisionShape" parent="Planet/Ship/ContactArea"]
+shape = SubResource( 3 )
+
+[node name="TopViewCamera" type="Camera" parent="Planet/Ship"]
+transform = Transform( 1, 0, 0, 0, 0.325568, 0.945519, 0, -0.945519, 0.325568, 0, 9.5, 0 )
+fov = 50.0
+size = 0.14
+
+[node name="EnemySpawner" type="Spatial" parent="Planet"]
+script = ExtResource( 3 )
+
+[node name="HUD" parent="." instance=ExtResource( 7 )]
+script = ExtResource( 8 )
+
+[connection signal="health_changed" from="Planet/Ship" to="HUD" method="_on_Ship_health_changed"]
+[connection signal="timeout" from="Planet/Ship/Visual/CanonLeft/Timer" to="Planet/Ship/Visual/CanonLeft" method="_on_Timer_timeout"]
+[connection signal="timeout" from="Planet/Ship/Visual/CanonRight/Timer" to="Planet/Ship/Visual/CanonRight" method="_on_Timer_timeout"]
+[connection signal="body_entered" from="Planet/Ship/ContactArea" to="Planet/Ship" method="_on_contact_area_body_entered"]

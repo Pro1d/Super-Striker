@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://entities/RunnerEnemy.gd" type="Script" id=1]
+
+[sub_resource type="SphereShape" id=1]
+radius = 0.5
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.482353, 0.905882, 0.639216, 1 )
+
+[sub_resource type="SphereMesh" id=3]
+material = SubResource( 2 )
+radius = 0.5
+height = 1.0
+radial_segments = 16
+rings = 8
+
+[sub_resource type="SphereMesh" id=4]
+radius = 0.15
+height = 0.1
+radial_segments = 12
+rings = 6
+is_hemisphere = true
+
+[node name="RunnerEnemy" type="KinematicBody"]
+collision_layer = 4
+collision_mask = 15
+script = ExtResource( 1 )
+max_linear_accel = 40.0
+max_steering_speed = 4.0
+max_steering_accel = 60.0
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="MeshInstance2" type="MeshInstance" parent="MeshInstance"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 4.25637e-10, -0.443171 )
+mesh = SubResource( 4 )
+material/0 = null
